@@ -1,0 +1,11 @@
+services:
+  docd:
+    image: alpine:3.20
+    command: ["sh", "-lc", "echo docd scaffold && sleep infinity"]
+
+  pdf-secure:
+    image: alpine:3.20
+    command: ["sh", "-lc", "echo pdf-secure scaffold && sleep infinity"]
+
+  pdf-viewer-demo:
+    image: nginx:alpine
