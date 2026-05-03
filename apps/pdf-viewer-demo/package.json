@@ -1,8 +1,8 @@
 {
-  "name": "docd",
+  "name": "pdf-viewer-demo",
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "smoke": "node src/derive.js"
+    "smoke": "node src/smoke.js"
   }
 }
