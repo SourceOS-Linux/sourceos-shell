@@ -1,0 +1,167 @@
+version: 0.1
+purpose: >
+  Conservative mapping from Apple/macOS service-family strings to SourceOS helper receipt phases and policy profiles.
+  This supports imported-log analysis without claiming private subsystem intent.
+default_phase: unknown_or_general_launchd_churn
+default_policy_profile: unknown
+families:
+  - match: com.apple.mdworker
+    phase: spotlight_metadata_indexing
+    policy_profile: indexer.metadata_local.v1
+    role: metadata_index_worker
+  - match: mdworker_shared
+    phase: spotlight_metadata_indexing
+    policy_profile: indexer.metadata_local.v1
+    role: metadata_index_worker
+  - match: CacheDelete
+    phase: cache_cleanup
+    policy_profile: cache_cleanup.local_only.v1
+    role: cache_cleanup
+  - match: CacheExtension
+    phase: cache_cleanup
+    policy_profile: cache_cleanup.local_only.v1
+    role: cache_cleanup
+  - match: WebKit
+    phase: web_thumbnail_or_webkit_helper
+    policy_profile: preview.web_thumbnail.local_only.v1
+    role: web_runtime_helper
+  - match: WebThumbnail
+    phase: web_thumbnail_or_webkit_helper
+    policy_profile: preview.web_thumbnail.local_only.v1
+    role: web_thumbnail_helper
+  - match: QuickLook
+    phase: quicklook_preview_rendering
+    policy_profile: preview.local_only.v1
+    role: preview_ui_or_thumbnail
+  - match: CGPDFService
+    phase: quicklook_preview_rendering
+    policy_profile: preview.local_only.v1
+    role: pdf_rendering_helper
+  - match: ImageIOXPCService
+    phase: quicklook_preview_rendering
+    policy_profile: preview.local_only.v1
+    role: image_decode_helper
+  - match: ThumbnailExtension
+    phase: quicklook_preview_rendering
+    policy_profile: preview.local_only.v1
+    role: thumbnail_helper
+  - match: screencapture
+    phase: screenshot_capture
+    policy_profile: screenshot.capture_receipt.v1
+    role: screenshot_capture_ui
+  - match: openAndSavePanelService
+    phase: native_file_picker
+    policy_profile: file_picker.native_ui.v1
+    role: native_file_picker
+  - match: AXVisualSupportAgent
+    phase: accessibility_ui_support
+    policy_profile: accessibility.ui_support.v1
+    role: accessibility_visual_support
+  - match: com.apple.accessibility
+    phase: accessibility_ui_support
+    policy_profile: accessibility.ui_support.v1
+    role: accessibility_service
+  - match: com.apple.filesystems.netfs
+    phase: filesystem_netfs_plugin
+    policy_profile: filesystem.netfs_plugin.v1
+    role: network_filesystem_plugin
+  - match: PlugInLibraryService
+    phase: filesystem_netfs_plugin
+    policy_profile: filesystem.netfs_plugin.v1
+    role: plugin_library_service
+  - match: iconservices
+    phase: iconservices_rendering
+    policy_profile: iconservices.rendering_local.v1
+    role: icon_rendering_service
+  - match: AudioComponentRegistrar
+    phase: audio_component_discovery
+    policy_profile: audio.component_scan_local.v1
+    role: audio_component_registry
+  - match: CarbonComponentScanner
+    phase: audio_component_discovery
+    policy_profile: audio.component_scan_local.v1
+    role: audio_component_scanner
+  - match: trustd
+    phase: trust_and_certificate_services
+    policy_profile: trust.security_local.v1
+    role: certificate_trust_service
+  - match: secinitd
+    phase: trust_and_certificate_services
+    policy_profile: trust.security_local.v1
+    role: security_initialization
+  - match: amfid
+    phase: security_integrity_sidecar
+    policy_profile: security.scan_local.v1
+    role: code_integrity
+  - match: XProtect
+    phase: security_integrity_sidecar
+    policy_profile: security.scan_local.v1
+    role: malware_protection
+  - match: sysextd
+    phase: system_extension_management
+    policy_profile: system_extension.management_local.v1
+    role: system_extension_daemon
+  - match: CloudTelemetry
+    phase: telemetry_sidecar
+    policy_profile: telemetry.local_metric.v1
+    role: telemetry_service
+  - match: ecosystemanalytics
+    phase: telemetry_sidecar
+    policy_profile: telemetry.local_metric.v1
+    role: ecosystem_analytics
+  - match: ecosystemd
+    phase: ecosystem_services
+    policy_profile: ecosystem.service_local.v1
+    role: ecosystem_service
+  - match: biomesyncd
+    phase: biome_sync_services
+    policy_profile: biome.sync_local.v1
+    role: biome_sync_service
+  - match: geod
+    phase: location_services
+    policy_profile: location.service_deny_by_default.v1
+    role: location_service
+  - match: appleaccountd
+    phase: account_identity_services
+    policy_profile: account.identity_deny_by_default.v1
+    role: account_identity_service
+  - match: iCloudNotificationAgent
+    phase: cloud_notification_services
+    policy_profile: cloud_notification_deny_by_default.v1
+    role: icloud_notification_agent
+  - match: maild
+    phase: mail_services
+    policy_profile: mail.service_local.v1
+    role: mail_service
+  - match: WorkflowKit
+    phase: workflow_background_shortcuts
+    policy_profile: workflow.background_shortcut.v1
+    role: background_shortcut_runner
+  - match: BackgroundShortcutRunner
+    phase: workflow_background_shortcuts
+    policy_profile: workflow.background_shortcut.v1
+    role: background_shortcut_runner
+  - match: naturallanguaged
+    phase: natural_language_processing
+    policy_profile: nlp.local_processing.v1
+    role: natural_language_daemon
+  - match: cfprefsd
+    phase: preferences_services
+    policy_profile: preferences.local_service.v1
+    role: preferences_daemon
+  - match: prngseedd
+    phase: secure_random_seed_services
+    policy_profile: security.random_seed_local.v1
+    role: random_seed_service
+  - match: seputil
+    phase: secure_enclave_utility
+    policy_profile: security.secure_enclave_local.v1
+    role: secure_enclave_utility
+  - match: MTLCompilerService
+    phase: metal_shader_compilation
+    policy_profile: gpu.shader_compile_local.v1
+    role: metal_compiler_service
+  - match: swcd
+    phase: shared_web_credentials
+    policy_profile: web_credentials_deny_by_default.v1
+    role: shared_web_credentials_daemon
