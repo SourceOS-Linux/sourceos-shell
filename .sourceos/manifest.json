@@ -1,0 +1,68 @@
+{
+  "repo": "SourceOS-Linux/sourceos-shell",
+  "domain": "shell",
+  "specVersion": "0.1.0",
+  "ownedSchemas": [
+    "ShellProfile",
+    "CommandTemplate",
+    "ShellEnvironmentProfile"
+  ],
+  "syncEngines": [
+    {
+      "engineId": "sourceos.sync.shell",
+      "collection": "shell",
+      "schemaVersion": "0.1.0",
+      "ownerRepo": "SourceOS-Linux/sourceos-shell",
+      "defaultEnabled": true,
+      "policyClass": "high",
+      "encryptionScope": "profile",
+      "mergeStrategy": "manual_review",
+      "supportsTombstones": true,
+      "supportsRollback": true,
+      "supportsExport": true,
+      "dangerousFields": [
+        "aliases",
+        "functions",
+        "pathEntries",
+        "environmentTemplates",
+        "startupScripts",
+        "commandTemplates"
+      ],
+      "auditEvents": [
+        "shell.profile.changed",
+        "shell.profile.denied",
+        "shell.command_template.changed",
+        "shell.environment.redacted"
+      ]
+    }
+  ],
+  "sourceChannels": [
+    "shell.profile.read",
+    "shell.profile.apply",
+    "shell.command_template.apply"
+  ],
+  "policyClasses": [
+    "high"
+  ],
+  "auditEvents": [
+    "shell.profile.changed",
+    "shell.profile.denied",
+    "shell.command_template.changed",
+    "shell.environment.redacted"
+  ],
+  "dangerousSurfaces": [
+    "shell.profile.apply",
+    "shell.alias.add",
+    "shell.function.add",
+    "shell.path.update",
+    "shell.env_template.update",
+    "shell.command_template.apply",
+    "shell.remote_command.execute"
+  ],
+  "authorityRepos": [
+    "SourceOS-Linux/sourceos-spec",
+    "SocioProphet/policy-fabric",
+    "SocioProphet/guardrail-fabric"
+  ],
+  "notes": "Shell execution and safe shell sync surface. Raw shell history and secret-bearing environment state must not sync by default."
+}
