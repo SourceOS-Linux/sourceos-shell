@@ -1,0 +1,14 @@
+{
+  "schema": "sourceos.helper_causal_receipt.v0.1",
+  "event_type": "capability.request",
+  "event_id": "evt_fixture_preview_fail",
+  "timestamp": "2026-05-06T00:00:01Z",
+  "root_intent_id": "intent.preview.file.fixture",
+  "policy_profile": "preview.local_only.v1",
+  "requestor": "sourceos-pdf-renderer",
+  "capability": "network.egress",
+  "requested_service": "network",
+  "decision": "allow",
+  "classification": "policy_regression",
+  "data_accessed": true
+}
