@@ -1,0 +1,26 @@
+{
+  "receiptId": "urn:srcos:shell-receipt-event:redacted-demo-0001",
+  "specVersion": "0.1.0",
+  "receiptClass": "redaction-tombstone",
+  "occurredAt": "2026-05-06T21:32:00Z",
+  "actorRef": "urn:srcos:subject:operator-demo",
+  "agentRegistryRef": null,
+  "sessionRef": "urn:srcos:shell-session:demo-0001",
+  "workroomRef": "urn:srcos:workroom:professional-intelligence-demo",
+  "payloadMode": "redacted",
+  "contentCaptureEnabled": false,
+  "payload": {
+    "redactionClass": "sensitive-context",
+    "inlineMaterialIncluded": false
+  },
+  "artifactRefs": [],
+  "policyDecisionRefs": [
+    "urn:srcos:policy-decision:ops-history-redact-event-demo-0001"
+  ],
+  "evidenceRefs": [
+    "urn:srcos:evidence:sourceos-shell-redaction-demo-0001"
+  ],
+  "redactionRefs": [
+    "urn:srcos:redaction-tombstone:demo-credential-boundary-0001"
+  ]
+}
