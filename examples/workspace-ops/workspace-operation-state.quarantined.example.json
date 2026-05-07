@@ -1,0 +1,45 @@
+{
+  "stateId": "urn:srcos:workspace-op-state:quarantined-demo-0001",
+  "specVersion": "0.1.0",
+  "projectedAt": "2026-05-07T06:02:00Z",
+  "workspaceRef": "urn:srcos:workspace:quarantine-demo",
+  "operationState": "quarantined",
+  "fileAvailabilityState": "quarantined",
+  "deviceIdentity": {
+    "deviceRef": "urn:srcos:device:workstation-demo-0001",
+    "trustProfile": "device-only",
+    "deviceLabel": null
+  },
+  "syncStatus": {
+    "syncRef": "urn:srcos:syncd-session:demo-0003",
+    "syncState": "offline",
+    "lastSyncedAt": null,
+    "pendingChangeCount": null
+  },
+  "integrationEntryPoints": {
+    "turtleTerm": {
+      "commandRef": "urn:srcos:op-command:turtleterm-open-demo-0003",
+      "available": false,
+      "sessionRef": null
+    },
+    "bearBrowser": {
+      "commandRef": "urn:srcos:op-command:bearbrowser-open-demo-0003",
+      "available": false,
+      "tabRef": null
+    },
+    "agentMachine": {
+      "commandRef": "urn:srcos:op-command:agentmachine-activate-demo-0003",
+      "available": false,
+      "agentRegistryRef": null
+    }
+  },
+  "operationTrayProjection": {
+    "trayEntryRef": "urn:srcos:tray-entry:demo-0003",
+    "label": "quarantine-demo",
+    "badgeState": "quarantined"
+  },
+  "operationInspectorProjection": null,
+  "policyDecisionRefs": [
+    "urn:srcos:policy-decision:workspace-op-state-quarantine-demo-0001"
+  ]
+}

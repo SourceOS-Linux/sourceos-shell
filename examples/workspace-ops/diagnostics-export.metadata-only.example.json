@@ -1,0 +1,24 @@
+{
+  "exportId": "urn:srcos:diag-export:summary-demo-0001",
+  "specVersion": "0.1.0",
+  "exportedAt": "2026-05-07T06:11:00Z",
+  "actorRef": "urn:srcos:subject:operator-demo",
+  "sessionRef": "urn:srcos:shell-session:demo-0002",
+  "workspaceRef": "urn:srcos:workspace:professional-intelligence-demo",
+  "redactionApplied": true,
+  "payloadMode": "metadata-only",
+  "contentCaptureEnabled": false,
+  "diagnosticClasses": [
+    "operation-state",
+    "sync-status",
+    "device-identity",
+    "integration-entry-point"
+  ],
+  "artifactRefs": [
+    "urn:srcos:evidence:diag-export-summary-demo-0001"
+  ],
+  "redactionRefs": [],
+  "policyDecisionRefs": [
+    "urn:srcos:policy-decision:diag-export-summary-demo-0001"
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.sourceos.ai/sourceos-shell/workspace-operation-state.schema.json",
+  "title": "WorkspaceOperationState",
+  "description": "Read-only projection of local Workspace Operation state surfaced by sourceos-shell. The shell is a control surface only; it does not own Policy Fabric or Operation Plane runtime logic.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "stateId",
+    "specVersion",
+    "projectedAt",
+    "operationState",
+    "fileAvailabilityState",
+    "deviceIdentity",
+    "syncStatus",
+    "integrationEntryPoints",
+    "policyDecisionRefs"
+  ],
+  "properties": {
+    "stateId": {
+      "type": "string",
+      "pattern": "^urn:srcos:workspace-op-state:"
+    },
+    "specVersion": { "type": "string" },
+    "projectedAt": { "type": "string", "format": "date-time" },
+    "workspaceRef": { "type": ["string", "null"] },
+    "operationState": {
+      "type": "string",
+      "description": "Current lifecycle state of the workspace operation as reported by the Operation Plane.",
+      "enum": [
+        "stored",
+        "quarantined",
+        "admitted",
+        "activated",
+        "syncing",
+        "conflicted",
+        "failed"
+      ]
+    },
+    "fileAvailabilityState": {
+      "type": "string",
+      "description": "Availability state of the primary file or artefact under this operation.",
+      "enum": [
+        "local",
+        "remote",
+        "syncing",
+        "conflicted",
+        "quarantined"
+      ]
+    },
+    "deviceIdentity": {
+      "type": "object",
+      "description": "Device identity and trust profile as supplied by the device trust authority. Shell projects this; it does not author it.",
+      "additionalProperties": false,
+      "required": ["deviceRef", "trustProfile"],
+      "properties": {
+        "deviceRef": { "type": "string" },
+        "trustProfile": {
+          "type": "string",
+          "enum": ["untrusted", "device-only", "user-verified", "workstation-admitted"]
+        },
+        "deviceLabel": { "type": ["string", "null"] }
+      }
+    },
+    "syncStatus": {
+      "type": "object",
+      "description": "Sync status projection sourced from sourceos-syncd. Shell reads this; it does not produce it.",
+      "additionalProperties": false,
+      "required": ["syncRef", "syncState"],
+      "properties": {
+        "syncRef": { "type": "string" },
+        "syncState": {
+          "type": "string",
+          "enum": ["idle", "syncing", "conflict", "error", "offline"]
+        },
+        "lastSyncedAt": { "type": ["string", "null"], "format": "date-time" },
+        "pendingChangeCount": { "type": ["integer", "null"], "minimum": 0 }
+      }
+    },
+    "integrationEntryPoints": {
+      "type": "object",
+      "description": "Shell-surface entry points for workspace operation integrations. Each entry point is a ref the shell uses to route an OperationCommand; the shell does not execute the integration directly.",
+      "additionalProperties": false,
+      "required": ["turtleTerm", "bearBrowser", "agentMachine"],
+      "properties": {
+        "turtleTerm": {
+          "type": "object",
+          "description": "TurtleTerm terminal operation integration entry point.",
+          "additionalProperties": false,
+          "required": ["commandRef", "available"],
+          "properties": {
+            "commandRef": { "type": "string" },
+            "available": { "type": "boolean" },
+            "sessionRef": { "type": ["string", "null"] }
+          }
+        },
+        "bearBrowser": {
+          "type": "object",
+          "description": "BearBrowser browser operation integration entry point.",
+          "additionalProperties": false,
+          "required": ["commandRef", "available"],
+          "properties": {
+            "commandRef": { "type": "string" },
+            "available": { "type": "boolean" },
+            "tabRef": { "type": ["string", "null"] }
+          }
+        },
+        "agentMachine": {
+          "type": "object",
+          "description": "Agent-machine operation integration entry point.",
+          "additionalProperties": false,
+          "required": ["commandRef", "available"],
+          "properties": {
+            "commandRef": { "type": "string" },
+            "available": { "type": "boolean" },
+            "agentRegistryRef": { "type": ["string", "null"] }
+          }
+        }
+      }
+    },
+    "operationTrayProjection": {
+      "type": ["object", "null"],
+      "description": "Local Operation Tray projection metadata. Shell renders this view; Policy Fabric owns the source.",
+      "additionalProperties": false,
+      "properties": {
+        "trayEntryRef": { "type": "string" },
+        "label": { "type": "string" },
+        "badgeState": {
+          "type": "string",
+          "enum": ["idle", "active", "conflict", "error", "quarantined"]
+        }
+      }
+    },
+    "operationInspectorProjection": {
+      "type": ["object", "null"],
+      "description": "Local Operation Inspector projection metadata. Shell renders this view; Policy Fabric owns the source.",
+      "additionalProperties": false,
+      "properties": {
+        "inspectorRef": { "type": "string" },
+        "detailRefs": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": []
+        }
+      }
+    },
+    "policyDecisionRefs": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

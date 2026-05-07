@@ -1,0 +1,50 @@
+{
+  "stateId": "urn:srcos:workspace-op-state:admitted-syncing-demo-0001",
+  "specVersion": "0.1.0",
+  "projectedAt": "2026-05-07T06:00:00Z",
+  "workspaceRef": "urn:srcos:workspace:professional-intelligence-demo",
+  "operationState": "admitted",
+  "fileAvailabilityState": "syncing",
+  "deviceIdentity": {
+    "deviceRef": "urn:srcos:device:workstation-demo-0001",
+    "trustProfile": "workstation-admitted",
+    "deviceLabel": "dev-workstation-demo"
+  },
+  "syncStatus": {
+    "syncRef": "urn:srcos:syncd-session:demo-0001",
+    "syncState": "syncing",
+    "lastSyncedAt": "2026-05-07T05:58:00Z",
+    "pendingChangeCount": 3
+  },
+  "integrationEntryPoints": {
+    "turtleTerm": {
+      "commandRef": "urn:srcos:op-command:turtleterm-open-demo-0001",
+      "available": true,
+      "sessionRef": "urn:srcos:turtleterm-session:demo-0001"
+    },
+    "bearBrowser": {
+      "commandRef": "urn:srcos:op-command:bearbrowser-open-demo-0001",
+      "available": true,
+      "tabRef": null
+    },
+    "agentMachine": {
+      "commandRef": "urn:srcos:op-command:agentmachine-activate-demo-0001",
+      "available": false,
+      "agentRegistryRef": null
+    }
+  },
+  "operationTrayProjection": {
+    "trayEntryRef": "urn:srcos:tray-entry:demo-0001",
+    "label": "professional-intelligence-demo",
+    "badgeState": "active"
+  },
+  "operationInspectorProjection": {
+    "inspectorRef": "urn:srcos:inspector:demo-0001",
+    "detailRefs": [
+      "urn:srcos:evidence:workspace-op-state-detail-demo-0001"
+    ]
+  },
+  "policyDecisionRefs": [
+    "urn:srcos:policy-decision:workspace-op-state-projection-demo-0001"
+  ]
+}

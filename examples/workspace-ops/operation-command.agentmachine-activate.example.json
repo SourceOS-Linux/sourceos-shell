@@ -1,0 +1,17 @@
+{
+  "commandId": "urn:srcos:op-command:agentmachine-activate-demo-0001",
+  "specVersion": "0.1.0",
+  "issuedAt": "2026-05-07T06:07:00Z",
+  "actorRef": "urn:srcos:subject:operator-demo",
+  "sessionRef": "urn:srcos:shell-session:demo-0001",
+  "commandClass": "agentmachine-activate",
+  "targetRef": "urn:srcos:workspace-op-state:admitted-syncing-demo-0001",
+  "payload": {
+    "agentRegistryRef": "urn:srcos:agent-grant:ops-history-operator-assist-demo",
+    "inlineMaterialIncluded": false
+  },
+  "isDryRun": false,
+  "policyDecisionRefs": [
+    "urn:srcos:policy-decision:op-command-agentmachine-demo-0001"
+  ]
+}
