@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.sourceos.ai/sourceos-shell/ops-history-receipt.schema.json",
+  "title": "OpsHistoryReceipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receiptId",
+    "specVersion",
+    "receiptClass",
+    "occurredAt",
+    "payloadMode",
+    "contentCaptureEnabled",
+    "policyDecisionRefs"
+  ],
+  "properties": {
+    "receiptId": {"type": "string", "pattern": "^urn:srcos:shell-receipt-event:"},
+    "specVersion": {"type": "string"},
+    "receiptClass": {
+      "type": "string",
+      "enum": [
+        "session-start",
+        "session-end",
+        "request-metadata",
+        "execution-state",
+        "artifact-ref",
+        "agent-delegation",
+        "policy-decision",
+        "cloudfog-attach",
+        "cloudfog-detach",
+        "redaction-tombstone"
+      ]
+    },
+    "occurredAt": {"type": "string", "format": "date-time"},
+    "actorRef": {"type": ["string", "null"]},
+    "agentRegistryRef": {"type": ["string", "null"]},
+    "sessionRef": {"type": ["string", "null"]},
+    "workroomRef": {"type": ["string", "null"]},
+    "payloadMode": {"type": "string", "enum": ["metadata-only", "summary", "ref-only", "redacted"]},
+    "contentCaptureEnabled": {"type": "boolean"},
+    "payload": {"type": ["object", "null"], "additionalProperties": true},
+    "artifactRefs": {"type": "array", "items": {"type": "string"}, "default": []},
+    "policyDecisionRefs": {"type": "array", "items": {"type": "string"}},
+    "evidenceRefs": {"type": "array", "items": {"type": "string"}, "default": []},
+    "redactionRefs": {"type": "array", "items": {"type": "string"}, "default": []}
+  }
+}

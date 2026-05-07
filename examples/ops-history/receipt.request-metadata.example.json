@@ -1,0 +1,26 @@
+{
+  "receiptId": "urn:srcos:shell-receipt-event:request-metadata-demo-0001",
+  "specVersion": "0.1.0",
+  "receiptClass": "request-metadata",
+  "occurredAt": "2026-05-06T21:30:00Z",
+  "actorRef": "urn:srcos:subject:operator-demo",
+  "agentRegistryRef": null,
+  "sessionRef": "urn:srcos:shell-session:demo-0001",
+  "workroomRef": "urn:srcos:workroom:professional-intelligence-demo",
+  "payloadMode": "metadata-only",
+  "contentCaptureEnabled": false,
+  "payload": {
+    "requestClass": "validation",
+    "requestHashRef": "urn:srcos:content-ref:sha256-demo-request",
+    "inlineRequestIncluded": false,
+    "inlineResultIncluded": false
+  },
+  "artifactRefs": [],
+  "policyDecisionRefs": [
+    "urn:srcos:policy-decision:ops-history-receipt-event-export-demo-0001"
+  ],
+  "evidenceRefs": [
+    "urn:srcos:evidence:sourceos-shell-request-receipt-demo-0001"
+  ],
+  "redactionRefs": []
+}

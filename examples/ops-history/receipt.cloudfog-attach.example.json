@@ -1,0 +1,25 @@
+{
+  "receiptId": "urn:srcos:shell-receipt-event:cloudfog-attach-demo-0001",
+  "specVersion": "0.1.0",
+  "receiptClass": "cloudfog-attach",
+  "occurredAt": "2026-05-06T21:31:00Z",
+  "actorRef": "urn:srcos:subject:operator-demo",
+  "agentRegistryRef": "urn:srcos:agent-grant:ops-history-operator-assist-demo",
+  "sessionRef": "urn:srcos:cloudfog-session:demo-0001",
+  "workroomRef": "urn:srcos:workroom:professional-intelligence-demo",
+  "payloadMode": "metadata-only",
+  "contentCaptureEnabled": false,
+  "payload": {
+    "placementClass": "fog-first",
+    "profileRef": "urn:srcos:shell-profile:default",
+    "inlineSessionMaterialIncluded": false
+  },
+  "artifactRefs": [],
+  "policyDecisionRefs": [
+    "urn:srcos:policy-decision:ops-history-receipt-event-export-demo-0001"
+  ],
+  "evidenceRefs": [
+    "urn:srcos:evidence:sourceos-shell-cloudfog-attach-demo-0001"
+  ],
+  "redactionRefs": []
+}
