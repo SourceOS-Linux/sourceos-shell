@@ -1,0 +1,44 @@
+name: Helper Causal Receipts
+
+on:
+  pull_request:
+    paths:
+      - 'schemas/helper-causal-receipts.schema.json'
+      - 'tests/fixtures/helper-receipts/**'
+      - 'tools/check_helper_receipts.py'
+      - '.github/workflows/helper-causal-receipts.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'schemas/helper-causal-receipts.schema.json'
+      - 'tests/fixtures/helper-receipts/**'
+      - 'tools/check_helper_receipts.py'
+      - '.github/workflows/helper-causal-receipts.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Validate passing fixtures
+        run: |
+          python3 tools/check_helper_receipts.py \
+            tests/fixtures/helper-receipts/preview_local_only_pass.json \
+            tests/fixtures/helper-receipts/web_thumbnail_pass_clipboard_denied.json
+      - name: Validate local-only negative fixture fails
+        run: |
+          if python3 tools/check_helper_receipts.py tests/fixtures/helper-receipts/preview_local_only_fail_pasteboard_allowed.json; then
+            echo 'negative fixture unexpectedly passed'
+            exit 1
+          fi
+      - name: Validate missing-intent negative fixture fails
+        run: |
+          if python3 tools/check_helper_receipts.py tests/fixtures/helper-receipts/helper_spawn_missing_root_intent_fail.json; then
+            echo 'missing-intent fixture unexpectedly passed'
+            exit 1
+          fi
