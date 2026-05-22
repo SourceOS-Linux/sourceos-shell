@@ -1,5 +1,8 @@
 {
   "name": "pdf-secure",
   "private": true,
-  "type": "module"
+  "type": "commonjs",
+  "scripts": {
+    "smoke": "node src/sign-validate.js"
+  }
 }
