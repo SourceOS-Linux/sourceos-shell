@@ -1,0 +1,41 @@
+name: PDF Runtime Scaffold
+
+on:
+  pull_request:
+    paths:
+      - 'Makefile'
+      - 'README.md'
+      - 'docs/**'
+      - 'services/docd/**'
+      - 'services/pdf-secure/**'
+      - 'apps/pdf-viewer-demo/**'
+      - '.github/workflows/pdf-runtime-scaffold.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'Makefile'
+      - 'README.md'
+      - 'docs/**'
+      - 'services/docd/**'
+      - 'services/pdf-secure/**'
+      - 'apps/pdf-viewer-demo/**'
+      - '.github/workflows/pdf-runtime-scaffold.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate scaffold
+        run: make validate
+      - name: Smoke scaffold
+        run: make smoke
