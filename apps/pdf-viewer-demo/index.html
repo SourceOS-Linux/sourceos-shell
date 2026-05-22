@@ -4,9 +4,329 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>sourceos-shell PDF Viewer Demo</title>
+  <style>
+    :root {
+      --color-enabled:   #1a7a42;
+      --color-pending:   #a65a00;
+      --color-blocked:   #b00020;
+      --color-degraded:  #7a6a00;
+      --color-failed:    #7a0000;
+      --color-text:      #1a1a1a;
+      --color-bg:        #f5f5f5;
+      --color-surface:   #ffffff;
+      --color-border:    #d0d0d0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      background: var(--color-bg);
+      color: var(--color-text);
+      padding: 1.5rem;
+    }
+    h1 { font-size: 1.4rem; margin-bottom: 0.25rem; }
+    .subtitle { color: #555; margin-bottom: 1.5rem; font-size: 0.9rem; }
+    h2 { font-size: 1rem; margin: 1.25rem 0 0.5rem; }
+
+    /* Capability ledger panel */
+    #ledger-panel {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    #ledger-panel table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    #ledger-panel th {
+      background: #f0f0f0;
+      text-align: left;
+      padding: 0.5rem 0.75rem;
+      border-bottom: 1px solid var(--color-border);
+      font-weight: 600;
+    }
+    #ledger-panel td {
+      padding: 0.45rem 0.75rem;
+      border-bottom: 1px solid #ececec;
+      vertical-align: top;
+    }
+    #ledger-panel tr:last-child td { border-bottom: none; }
+
+    .badge {
+      display: inline-block;
+      padding: 0.15em 0.55em;
+      border-radius: 3px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #fff;
+    }
+    .badge-enabled             { background: var(--color-enabled); }
+    .badge-declared,
+    .badge-requested,
+    .badge-negotiating,
+    .badge-available           { background: var(--color-pending); }
+    .badge-blocked_by_policy   { background: var(--color-blocked); }
+    .badge-degraded            { background: var(--color-degraded); }
+    .badge-failed,
+    .badge-unsupported_by_runtime,
+    .badge-unsupported_by_server { background: var(--color-failed); }
+    .badge-missing_plugin,
+    .badge-missing_schema      { background: #5a5a8a; }
+
+    .refs { font-size: 0.78rem; color: #555; margin-top: 0.2rem; }
+    .refs code { font-size: 0.78rem; background: #f0f0f0; padding: 0.05em 0.3em; border-radius: 2px; }
+    .conflict-warning { color: var(--color-blocked); font-size: 0.78rem; }
+
+    /* Feature gate demo */
+    #feature-gate {
+      margin-top: 1.25rem;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      padding: 1rem;
+    }
+    #feature-gate p { font-size: 0.9rem; margin-bottom: 0.75rem; }
+    .feature-block {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin-bottom: 0.5rem;
+    }
+    .feature-block button {
+      padding: 0.35rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .feature-block button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .feature-block button.btn-ok   { background: var(--color-enabled); color: #fff; }
+    .feature-block button.btn-deny { background: #ddd; color: #444; }
+    #feature-output {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      min-height: 1.2em;
+    }
+  </style>
 </head>
 <body>
   <h1>sourceos-shell PDF Viewer Demo</h1>
-  <p>PDF-first runtime scaffold placeholder.</p>
+  <p class="subtitle">PDF-first runtime scaffold — CapabilityLedger surface</p>
+
+  <h2>Capability Ledger</h2>
+  <div id="ledger-panel">
+    <table>
+      <thead>
+        <tr>
+          <th>Capability</th>
+          <th>State</th>
+          <th>Owner</th>
+          <th>Policy / Evidence</th>
+          <th>Conflicts</th>
+        </tr>
+      </thead>
+      <tbody id="ledger-body">
+        <tr><td colspan="5" style="color:#888;padding:1rem;">Initialising ledger…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Feature Gate Demo</h2>
+  <div id="feature-gate">
+    <p>Feature use is blocked until the ledger reports <strong>enabled</strong>.</p>
+    <div class="feature-block">
+      <button id="btn-pdf-view"   class="btn-deny" disabled>View PDF</button>
+      <span id="gate-pdf-view"></span>
+    </div>
+    <div class="feature-block">
+      <button id="btn-pdf-sign"   class="btn-deny" disabled>Sign PDF</button>
+      <span id="gate-pdf-sign"></span>
+    </div>
+    <div id="feature-output"></div>
+  </div>
+
+  <script type="module">
+    // ── Inline CapabilityLedger (browser-compatible, no bundler needed) ────
+
+    const CAPABILITY_STATES = [
+      'declared','requested','negotiating','available','enabled',
+      'degraded','blocked_by_policy','unsupported_by_runtime',
+      'unsupported_by_server','missing_plugin','missing_schema','failed',
+    ];
+    const CAPABILITY_OWNERS = ['UI','runtime','server','plugin','policy'];
+
+    function buildReceipt(capabilityId, state, owner, opts = {}) {
+      if (!CAPABILITY_STATES.includes(state))  throw new TypeError(`Invalid state: "${state}"`);
+      if (!CAPABILITY_OWNERS.includes(owner))  throw new TypeError(`Invalid owner: "${owner}"`);
+      return {
+        capabilityId,
+        state,
+        owner,
+        timestamp: new Date().toISOString(),
+        policyDecisionRef: opts.policyDecisionRef ?? null,
+        evidenceRefs: opts.evidenceRefs ?? [],
+        conflictWarnings: opts.conflictWarnings ?? [],
+      };
+    }
+
+    class CapabilityLedger {
+      constructor() { this._receipts = new Map(); }
+
+      _emit(id, state, owner, opts = {}) {
+        const existing = this._receipts.get(id);
+        const conflicts = [...(existing?.conflictWarnings ?? []), ...(opts.conflictWarnings ?? [])];
+        const r = buildReceipt(id, state, owner, { ...opts, conflictWarnings: conflicts });
+        this._receipts.set(id, r);
+        return r;
+      }
+
+      declare(id, owner, opts = {})               { return this._emit(id, 'declared', owner, opts); }
+      request(id, owner, opts = {})               { return this._emit(id, 'requested', owner, opts); }
+      negotiate(id, owner, opts = {})             { return this._emit(id, 'negotiating', owner, opts); }
+      setAvailable(id, owner, opts = {})          { return this._emit(id, 'available', owner, opts); }
+      enable(id, owner, pdr = null, ev = [])      { return this._emit(id, 'enabled', owner, { policyDecisionRef: pdr, evidenceRefs: ev }); }
+      deny(id, owner, pdr = null, ev = [])        { return this._emit(id, 'blocked_by_policy', owner, { policyDecisionRef: pdr, evidenceRefs: ev }); }
+      degrade(id, owner, ev = [])                 { return this._emit(id, 'degraded', owner, { evidenceRefs: ev }); }
+      setUnsupportedByRuntime(id, owner, ev = []) { return this._emit(id, 'unsupported_by_runtime', owner, { evidenceRefs: ev }); }
+      setUnsupportedByServer(id, owner, ev = [])  { return this._emit(id, 'unsupported_by_server', owner, { evidenceRefs: ev }); }
+      setMissingPlugin(id, owner, ev = [])        { return this._emit(id, 'missing_plugin', owner, { evidenceRefs: ev }); }
+      setMissingSchema(id, owner, ev = [])        { return this._emit(id, 'missing_schema', owner, { evidenceRefs: ev }); }
+      fail(id, owner, ev = [])                    { return this._emit(id, 'failed', owner, { evidenceRefs: ev }); }
+
+      logConflict(id, warning) {
+        const existing = this._receipts.get(id);
+        if (existing) { existing.conflictWarnings.push(warning); }
+        else { this._emit(id, 'declared', 'runtime', { conflictWarnings: [warning] }); }
+      }
+
+      reconcile() {
+        const enabled = [], pending = [], conflicted = [];
+        for (const [id, r] of this._receipts) {
+          (r.state === 'enabled' ? enabled : pending).push(id);
+          if (r.conflictWarnings.length > 0) conflicted.push(id);
+        }
+        return { enabled, pending, conflicted };
+      }
+
+      getState(id)   { return this._receipts.get(id)?.state ?? null; }
+      getReceipt(id) { return this._receipts.get(id) ?? null; }
+      getAll()       { return Array.from(this._receipts.values()); }
+      isEnabled(id)  { return this.getState(id) === 'enabled'; }
+    }
+
+    // ── Bootstrap ledger with PDF viewer demo capabilities ────────────────
+
+    const ledger = new CapabilityLedger();
+
+    // pdf-viewer: fully enabled
+    ledger.declare('pdf-viewer', 'UI');
+    ledger.request('pdf-viewer', 'runtime');
+    ledger.negotiate('pdf-viewer', 'server');
+    ledger.setAvailable('pdf-viewer', 'runtime');
+    ledger.enable(
+      'pdf-viewer', 'runtime',
+      'policy:allow-pdf-viewer:v1',
+      ['config:features/pdf-viewer:enabled', 'plugin:pdf-renderer:loaded'],
+    );
+
+    // pdf-sign: missing plugin
+    ledger.declare('pdf-sign', 'UI');
+    ledger.setMissingPlugin(
+      'pdf-sign', 'plugin',
+      ['plugin:ink-sign:not-installed'],
+    );
+
+    // live-collab: unsupported by server
+    ledger.declare('live-collab', 'UI');
+    ledger.setUnsupportedByServer(
+      'live-collab', 'server',
+      ['server:collab-api:not-supported'],
+    );
+
+    // analytics: blocked by policy
+    ledger.declare('analytics', 'UI');
+    ledger.deny(
+      'analytics', 'policy',
+      'policy:deny-analytics:privacy-v3',
+      ['audit:privacy-policy:2026-01'],
+    );
+
+    // graph-view: degraded (plugin loaded but slow)
+    ledger.declare('graph-view', 'UI');
+    ledger.degrade('graph-view', 'runtime', ['perf:graph-render:below-threshold']);
+    ledger.logConflict('graph-view', 'UI requested enabled but runtime reports degraded performance');
+
+    // ── Render ledger table ───────────────────────────────────────────────
+
+    function esc(str) {
+      return String(str ?? '')
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function renderRefs(refs) {
+      if (!refs || refs.length === 0) return '—';
+      return refs.map(r => `<code>${esc(r)}</code>`).join(' ');
+    }
+
+    function renderRow(receipt) {
+      const badgeClass = `badge-${receipt.state}`;
+      const pdr = receipt.policyDecisionRef
+        ? `<div class="refs">policy: <code>${esc(receipt.policyDecisionRef)}</code></div>`
+        : '';
+      const ev = receipt.evidenceRefs.length
+        ? `<div class="refs">evidence: ${renderRefs(receipt.evidenceRefs)}</div>`
+        : '';
+      const conflicts = receipt.conflictWarnings.length
+        ? receipt.conflictWarnings.map(w =>
+            `<div class="conflict-warning">⚠ ${esc(w)}</div>`
+          ).join('')
+        : '—';
+
+      return `<tr>
+        <td>${esc(receipt.capabilityId)}</td>
+        <td><span class="badge ${badgeClass}">${esc(receipt.state)}</span></td>
+        <td>${esc(receipt.owner)}</td>
+        <td>${pdr}${ev || (pdr ? '' : '—')}</td>
+        <td>${conflicts}</td>
+      </tr>`;
+    }
+
+    const tbody = document.getElementById('ledger-body');
+    tbody.innerHTML = ledger.getAll().map(renderRow).join('');
+
+    // ── Feature gate buttons ──────────────────────────────────────────────
+
+    function updateGate(capabilityId, btnId, gateId) {
+      const btn = document.getElementById(btnId);
+      const gate = document.getElementById(gateId);
+      const enabled = ledger.isEnabled(capabilityId);
+      const state = ledger.getState(capabilityId) ?? 'unknown';
+
+      btn.disabled = !enabled;
+      btn.className = enabled ? 'btn-ok' : 'btn-deny';
+      gate.textContent = enabled
+        ? '✓ enabled'
+        : `✗ blocked — state: ${state}`;
+      gate.style.color = enabled ? 'var(--color-enabled)' : 'var(--color-blocked)';
+    }
+
+    updateGate('pdf-viewer', 'btn-pdf-view', 'gate-pdf-view');
+    updateGate('pdf-sign',   'btn-pdf-sign', 'gate-pdf-sign');
+
+    const output = document.getElementById('feature-output');
+
+    document.getElementById('btn-pdf-view').addEventListener('click', () => {
+      if (!ledger.isEnabled('pdf-viewer')) return;
+      output.textContent = '📄 PDF viewer opened (capability confirmed enabled by ledger).';
+    });
+
+    document.getElementById('btn-pdf-sign').addEventListener('click', () => {
+      if (!ledger.isEnabled('pdf-sign')) return;
+      output.textContent = '✍ PDF signed.';
+    });
+  </script>
 </body>
 </html>
