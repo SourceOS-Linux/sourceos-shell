@@ -1,0 +1,14 @@
+{
+  "schema": "sourceos.helper_causal_receipt.v0.1",
+  "event_type": "capability.request",
+  "event_id": "evt_fixture_webthumb_pass",
+  "timestamp": "2026-05-06T00:00:02Z",
+  "root_intent_id": "intent.preview.web.fixture",
+  "policy_profile": "preview.web_thumbnail.local_only.v1",
+  "requestor": "sourceos-web-thumbnailer",
+  "capability": "pasteboard.read",
+  "requested_service": "pasteboard",
+  "decision": "deny",
+  "classification": "expected_denial",
+  "data_accessed": false
+}
