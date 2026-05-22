@@ -1,0 +1,23 @@
+{
+  "exportId": "urn:srcos:diag-export:redacted-demo-0001",
+  "specVersion": "0.1.0",
+  "exportedAt": "2026-05-07T06:10:00Z",
+  "actorRef": "urn:srcos:subject:operator-demo",
+  "sessionRef": "urn:srcos:shell-session:demo-0001",
+  "workspaceRef": "urn:srcos:workspace:professional-intelligence-demo",
+  "redactionApplied": true,
+  "payloadMode": "redacted",
+  "contentCaptureEnabled": false,
+  "diagnosticClasses": [
+    "operation-state",
+    "sync-status",
+    "file-availability"
+  ],
+  "artifactRefs": [],
+  "redactionRefs": [
+    "urn:srcos:redaction-tombstone:diag-export-demo-credential-boundary-0001"
+  ],
+  "policyDecisionRefs": [
+    "urn:srcos:policy-decision:diag-export-demo-0001"
+  ]
+}

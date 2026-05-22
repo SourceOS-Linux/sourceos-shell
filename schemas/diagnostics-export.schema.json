@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.sourceos.ai/sourceos-shell/diagnostics-export.schema.json",
+  "title": "DiagnosticsExport",
+  "description": "Redacted diagnostics export record produced by sourceos-shell. Policy Fabric decides what is exported; the shell applies redaction policy before emitting this record.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "exportId",
+    "specVersion",
+    "exportedAt",
+    "redactionApplied",
+    "payloadMode",
+    "contentCaptureEnabled",
+    "policyDecisionRefs"
+  ],
+  "properties": {
+    "exportId": {
+      "type": "string",
+      "pattern": "^urn:srcos:diag-export:"
+    },
+    "specVersion": { "type": "string" },
+    "exportedAt": { "type": "string", "format": "date-time" },
+    "actorRef": { "type": ["string", "null"] },
+    "sessionRef": { "type": ["string", "null"] },
+    "workspaceRef": { "type": ["string", "null"] },
+    "redactionApplied": {
+      "type": "boolean",
+      "description": "Must be true. The shell must always apply redaction policy before export."
+    },
+    "payloadMode": {
+      "type": "string",
+      "enum": ["metadata-only", "summary", "ref-only", "redacted"]
+    },
+    "contentCaptureEnabled": {
+      "type": "boolean",
+      "description": "Must be false. Diagnostics export must never enable content capture."
+    },
+    "diagnosticClasses": {
+      "type": "array",
+      "description": "Classes of diagnostic data included in this export.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "operation-state",
+          "sync-status",
+          "file-availability",
+          "device-identity",
+          "integration-entry-point",
+          "model-carry-ref",
+          "workstation-state-ref"
+        ]
+      },
+      "default": []
+    },
+    "artifactRefs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "redactionRefs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "policyDecisionRefs": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

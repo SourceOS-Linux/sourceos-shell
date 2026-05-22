@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.sourceos.ai/sourceos-shell/operation-command.schema.json",
+  "title": "OperationCommand",
+  "description": "Shell-issued OperationCommand routed to the Operation Plane. The shell does not execute commands directly; it emits structured OperationCommand records for the Operation Plane to act on.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "commandId",
+    "specVersion",
+    "issuedAt",
+    "commandClass",
+    "targetRef",
+    "policyDecisionRefs"
+  ],
+  "properties": {
+    "commandId": {
+      "type": "string",
+      "pattern": "^urn:srcos:op-command:"
+    },
+    "specVersion": { "type": "string" },
+    "issuedAt": { "type": "string", "format": "date-time" },
+    "actorRef": { "type": ["string", "null"] },
+    "sessionRef": { "type": ["string", "null"] },
+    "commandClass": {
+      "type": "string",
+      "description": "Class of operation the shell is requesting the Operation Plane to perform.",
+      "enum": [
+        "turtleterm-open",
+        "turtleterm-close",
+        "bearbrowser-open",
+        "bearbrowser-close",
+        "agentmachine-activate",
+        "agentmachine-deactivate",
+        "sync-request",
+        "sync-cancel",
+        "diagnostics-export",
+        "model-carry-initiate",
+        "workstation-state-query"
+      ]
+    },
+    "targetRef": {
+      "type": "string",
+      "description": "URN reference to the operation, session, or resource the command targets."
+    },
+    "payload": {
+      "type": ["object", "null"],
+      "additionalProperties": true,
+      "description": "Optional command-class-specific metadata. Must not include inline sensitive material."
+    },
+    "isDryRun": {
+      "type": "boolean",
+      "description": "When true the shell requests a plan/preview response without side effects.",
+      "default": false
+    },
+    "policyDecisionRefs": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

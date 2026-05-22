@@ -1,0 +1,50 @@
+{
+  "stateId": "urn:srcos:workspace-op-state:conflicted-demo-0001",
+  "specVersion": "0.1.0",
+  "projectedAt": "2026-05-07T06:01:00Z",
+  "workspaceRef": "urn:srcos:workspace:professional-intelligence-demo",
+  "operationState": "conflicted",
+  "fileAvailabilityState": "conflicted",
+  "deviceIdentity": {
+    "deviceRef": "urn:srcos:device:workstation-demo-0001",
+    "trustProfile": "user-verified",
+    "deviceLabel": "dev-workstation-demo"
+  },
+  "syncStatus": {
+    "syncRef": "urn:srcos:syncd-session:demo-0002",
+    "syncState": "conflict",
+    "lastSyncedAt": "2026-05-07T05:59:00Z",
+    "pendingChangeCount": 0
+  },
+  "integrationEntryPoints": {
+    "turtleTerm": {
+      "commandRef": "urn:srcos:op-command:turtleterm-open-demo-0002",
+      "available": true,
+      "sessionRef": null
+    },
+    "bearBrowser": {
+      "commandRef": "urn:srcos:op-command:bearbrowser-open-demo-0002",
+      "available": true,
+      "tabRef": null
+    },
+    "agentMachine": {
+      "commandRef": "urn:srcos:op-command:agentmachine-activate-demo-0002",
+      "available": true,
+      "agentRegistryRef": "urn:srcos:agent-grant:conflict-resolution-demo"
+    }
+  },
+  "operationTrayProjection": {
+    "trayEntryRef": "urn:srcos:tray-entry:demo-0002",
+    "label": "professional-intelligence-demo",
+    "badgeState": "conflict"
+  },
+  "operationInspectorProjection": {
+    "inspectorRef": "urn:srcos:inspector:demo-0002",
+    "detailRefs": [
+      "urn:srcos:evidence:workspace-op-state-conflict-demo-0001"
+    ]
+  },
+  "policyDecisionRefs": [
+    "urn:srcos:policy-decision:workspace-op-state-projection-demo-0002"
+  ]
+}
