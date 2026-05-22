@@ -1,0 +1,13 @@
+{
+  "schema": "sourceos.helper_causal_receipt.v0.1",
+  "event_type": "helper.spawn",
+  "event_id": "evt_fixture_spawn_fail",
+  "timestamp": "2026-05-06T00:00:03Z",
+  "root_intent_id": "BROKEN",
+  "parent_event_id": null,
+  "parent_process": "sourceos-shell",
+  "child_process": "sourceos-helper",
+  "trigger": "ipc",
+  "spawn_reason": "fixture",
+  "policy_profile": "preview.local_only.v1"
+}
