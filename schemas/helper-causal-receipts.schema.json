@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sourceos.local/schemas/helper-causal-receipts.schema.json",
+  "title": "Helper Causal Receipts v0.1",
+  "type": "object",
+  "required": ["schema", "event_type", "event_id", "timestamp", "root_intent_id"],
+  "properties": {
+    "schema": { "const": "sourceos.helper_causal_receipt.v0.1" },
+    "event_type": {
+      "enum": [
+        "root_intent.created",
+        "helper.spawn",
+        "capability.request",
+        "helper.exit",
+        "teardown.normalized",
+        "policy.decision",
+        "data.touch"
+      ]
+    },
+    "event_id": { "type": "string", "minLength": 8 },
+    "parent_event_id": { "type": ["string", "null"] },
+    "root_intent_id": { "type": "string", "pattern": "^intent\\." },
+    "timestamp": { "type": "string" },
+    "surface": { "type": ["string", "null"] },
+    "actor": { "type": ["object", "null"], "additionalProperties": true },
+    "declared_purpose": { "type": ["string", "null"] },
+    "data_scope": { "type": ["object", "array", "null"] },
+    "default_policy": { "type": ["string", "null"] },
+    "receipt_required": { "type": ["boolean", "null"] },
+    "parent_process": { "type": ["string", "null"] },
+    "child_process": { "type": ["string", "null"] },
+    "process": { "type": ["string", "null"] },
+    "pid": { "type": ["integer", "null"] },
+    "trigger": { "type": ["string", "null"] },
+    "spawn_reason": { "type": ["string", "null"] },
+    "policy_profile": { "type": ["string", "null"] },
+    "expected_lifetime_ms": { "type": ["integer", "null"], "minimum": 0 },
+    "capability_budget": { "type": ["object", "null"] },
+    "requestor": { "type": ["string", "null"] },
+    "capability": { "type": ["string", "null"] },
+    "requested_service": { "type": ["string", "null"] },
+    "decision": { "enum": ["allow", "deny", "degrade", "missing", "unknown", null] },
+    "classification": {
+      "enum": [
+        "expected_denial",
+        "unexpected_denial",
+        "compatibility_probe",
+        "policy_regression",
+        "malicious_probe_candidate",
+        "missing_service",
+        "teardown_race",
+        "duplicate_activation_coalesced",
+        "supervisor_worker_lifecycle_kill",
+        "unknown",
+        null
+      ]
+    },
+    "policy_rule": { "type": ["string", "null"] },
+    "data_accessed": { "type": ["boolean", "null"] },
+    "exit_status": { "type": ["string", "null"] },
+    "duration_ms": { "type": ["integer", "null"], "minimum": 0 },
+    "children_cleaned": { "type": ["boolean", "null"] },
+    "unexpected_denials": { "type": ["integer", "null"], "minimum": 0 },
+    "network_used": { "type": ["boolean", "null"] },
+    "receipt_complete": { "type": ["boolean", "null"] },
+    "raw_message": { "type": ["string", "null"] },
+    "normalized_class": { "type": ["string", "null"] },
+    "severity": { "enum": ["trace", "info", "notice", "warning", "error", "critical", null] },
+    "meaning": { "type": ["string", "null"] },
+    "policy_impact": { "type": ["string", "null"] },
+    "service_key": { "type": ["string", "null"] },
+    "service_uuid": { "type": ["string", "null"] },
+    "service_family_role": { "type": ["string", "null"] },
+    "phase": { "type": ["string", "null"] },
+    "line_no": { "type": ["integer", "null"] },
+    "tags": { "type": ["array", "null"], "items": { "type": "string" } },
+    "inference_confidence": { "enum": ["high", "medium", "low", "unknown", null] }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "event_type": { "const": "helper.spawn" } } },
+      "then": { "required": ["parent_process", "child_process", "trigger", "spawn_reason", "policy_profile"] }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "capability.request" } } },
+      "then": { "required": ["requestor", "capability", "requested_service", "decision", "classification", "data_accessed"] }
+    },
+    {
+      "if": { "properties": { "event_type": { "const": "helper.exit" } } },
+      "then": { "required": ["process", "exit_status", "duration_ms", "receipt_complete"] }
+    }
+  ],
+  "additionalProperties": true
+}
