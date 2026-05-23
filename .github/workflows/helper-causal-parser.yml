@@ -36,4 +36,4 @@ jobs:
         with:
           python-version: '3.12'
       - name: Run parser and correlator tests
-        run: python -m unittest tests.test_unified_log_helper_parser tests.test_unified_log_helper_correlator
+        run: python -m unittest discover -s tests -p 'test_unified_log_helper_*.py'
