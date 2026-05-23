@@ -1,0 +1,106 @@
+version: 0.1
+purpose: >
+  Map named helper/service lookups into SourceOS Helper Causal Receipt capability classes.
+  Unknown services remain mach_service.lookup until explicitly classified.
+default_capability: mach_service.lookup
+rules:
+  - match: pasteboard
+    capability: pasteboard.read
+    sensitivity: high
+    default_preview_decision: deny
+    rationale: Clipboard access is unrelated to passive preview or thumbnail generation.
+  - match: analyticsd
+    capability: analytics.emit
+    sensitivity: high
+    default_preview_decision: deny
+    rationale: Preview and cache helpers must not emit analytics by default.
+  - match: ecosystemanalyticsd
+    capability: analytics.emit
+    sensitivity: high
+    default_preview_decision: deny
+    rationale: Ecosystem analytics is telemetry-adjacent and must be separated from local security checks.
+  - match: tccd
+    capability: privacy.tcc.lookup
+    sensitivity: high
+    default_preview_decision: deny
+    rationale: Privacy/TCC lookups must be receipt-bearing.
+  - match: distributed_notifications
+    capability: notifications.distributed.lookup
+    sensitivity: medium
+    default_preview_decision: deny
+    rationale: Distributed notification lookups are optional UI/system probes in many helper contexts.
+  - match: webprivacyd
+    capability: privacy.web.lookup
+    sensitivity: high
+    default_preview_decision: deny
+    rationale: Web privacy service access is not required for local-only snapshot rendering.
+  - match: PowerManagement
+    capability: power.management.lookup
+    sensitivity: medium
+    default_preview_decision: deny
+    rationale: Passive preview helpers should not require power-management control.
+  - match: CARenderServer
+    capability: render.ca_server.lookup
+    sensitivity: medium
+    default_preview_decision: deny_or_mediated
+    rationale: Rendering helpers may need mediated graphics access, not broad compositor authority.
+  - match: windowserver
+    capability: windowserver.lookup
+    sensitivity: high
+    default_preview_decision: deny_or_mediated
+    rationale: Window-server access must be mediated and tied to visible UI intent.
+  - match: dock
+    capability: dock.lookup
+    sensitivity: low
+    default_preview_decision: deny_or_expected_denial
+    rationale: Dock/fullscreen probes are often UI compatibility probes but must remain classified.
+  - match: LaunchServices
+    capability: launchservices.lookup
+    sensitivity: medium
+    default_preview_decision: deny_or_brokered
+    rationale: LaunchServices can reveal app/file associations and should be brokered.
+  - match: coreservices
+    capability: coreservices.lookup
+    sensitivity: medium
+    default_preview_decision: deny_or_brokered
+    rationale: CoreServices lookups should be scoped to declared preview/file-picker purpose.
+  - match: FileProvider
+    capability: fileprovider.lookup
+    sensitivity: high
+    default_preview_decision: deny
+    rationale: FileProvider can imply cloud/sync surfaces; previews must not trigger sync implicitly.
+  - match: CloudTelemetry
+    capability: telemetry.cloud.lookup
+    sensitivity: high
+    default_preview_decision: deny
+    rationale: Cloud telemetry is not required for local-only helper work.
+  - match: XProtect
+    capability: security.xprotect.lookup
+    sensitivity: medium
+    default_preview_decision: allow_local_security
+    rationale: Local security checks may be allowed if receipt-bearing and separated from telemetry.
+  - match: MobileFileIntegrity
+    capability: security.code_integrity.lookup
+    sensitivity: medium
+    default_preview_decision: allow_local_security
+    rationale: Code integrity checks are acceptable when locally scoped and receipt-bearing.
+  - match: Keychain
+    capability: credentials.keychain.lookup
+    sensitivity: critical
+    default_preview_decision: deny
+    rationale: Preview helpers must not access credentials.
+  - match: securityd
+    capability: security.service.lookup
+    sensitivity: high
+    default_preview_decision: deny_or_brokered
+    rationale: Security service access requires explicit brokered purpose.
+  - match: apsd
+    capability: push_notifications.lookup
+    sensitivity: medium
+    default_preview_decision: deny
+    rationale: Push notification service is unrelated to local preview/cache cleanup.
+  - match: geod
+    capability: location.service.lookup
+    sensitivity: critical
+    default_preview_decision: deny
+    rationale: Location access is never needed for local preview.

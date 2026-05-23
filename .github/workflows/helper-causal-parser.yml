@@ -1,0 +1,49 @@
+name: Helper Causal Parser
+
+on:
+  pull_request:
+    paths:
+      - 'docs/architecture/helper-causal-receipts-v0.1.md'
+      - 'policies/helper-receipts/**'
+      - 'tools/unified_log_helper_parser.py'
+      - 'tools/unified_log_helper_correlator.py'
+      - 'tests/test_unified_log_helper_parser.py'
+      - 'tests/test_unified_log_helper_correlator.py'
+      - '.github/workflows/helper-causal-parser.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'docs/architecture/helper-causal-receipts-v0.1.md'
+      - 'policies/helper-receipts/**'
+      - 'tools/unified_log_helper_parser.py'
+      - 'tools/unified_log_helper_correlator.py'
+      - 'tests/test_unified_log_helper_parser.py'
+      - 'tests/test_unified_log_helper_correlator.py'
+      - '.github/workflows/helper-causal-parser.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run parser and correlator tests
+        run: |
+          python - <<'PY'
+          from tests import test_unified_log_helper_parser as parser_tests
+          from tests import test_unified_log_helper_correlator as correlator_tests
+
+          parser_tests.test_parse_mdworker_spawn()
+          parser_tests.test_parse_denied_pasteboard()
+          parser_tests.test_parse_teardown_without_context()
+          correlator_tests.test_build_dag_basic_lifecycle()
+          print('helper causal parser tests passed')
+          PY
