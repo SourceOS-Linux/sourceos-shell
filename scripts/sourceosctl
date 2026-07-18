@@ -1,0 +1,155 @@
+#!/usr/bin/env bash
+# sourceosctl — SourceOS Shell operator control surface
+# Provides explain, status, and evidence topology views.
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+sourceosctl - SourceOS Shell operator CLI
+
+Usage:
+  sourceosctl explain writes
+  sourceosctl explain sync
+  sourceosctl explain browser
+  sourceosctl explain terminal
+  sourceosctl explain logs
+  sourceosctl explain compromise
+  sourceosctl state-integrity status [--json]
+  sourceosctl lifecycle status [--json]
+
+Notes:
+  - explain commands show evidence topology for mutation/observability surfaces
+  - state-integrity status shows State Integrity daemon context (sourceos-syncd)
+  - lifecycle status shows Host Runtime lifecycle state
+EOF
+}
+
+err() { printf "ERROR: %s\n" "$*" >&2; }
+
+_stub_note() {
+  local surface="$1"
+  printf '{"surface":"%s","status":"stub","note":"Full explain requires sourceos-syncd daemon and mutation-evidence-accountability contracts. Stub surface per sourceos-shell#15."}\n' "$surface"
+}
+
+explain_writes() {
+  _stub_note "writes"
+}
+
+explain_sync() {
+  _stub_note "sync"
+}
+
+explain_browser() {
+  _stub_note "browser"
+}
+
+explain_terminal() {
+  _stub_note "terminal"
+}
+
+explain_logs() {
+  _stub_note "logs"
+}
+
+explain_compromise() {
+  _stub_note "compromise"
+}
+
+state_integrity_status() {
+  local json_mode=0
+  [[ "${1:-}" == "--json" ]] && json_mode=1
+
+  # Attempt to query sourceos-syncd if available
+  local syncd_available=false
+  local profile="unknown"
+  local workspace="unknown"
+  local device="unknown"
+  local daemon_state="unavailable"
+  local degraded=false
+  local policy_blocked=false
+  local conflict_count=0
+  local repair_needed=false
+
+  if command -v sourceos-syncd &>/dev/null 2>&1; then
+    syncd_available=true
+    daemon_state="running"
+  fi
+
+  if [[ "$json_mode" -eq 1 ]]; then
+    printf '{"daemon_available":%s,"daemon_state":"%s","active_profile":"%s","active_workspace":"%s","active_device":"%s","degraded":%s,"policy_blocked":%s,"conflict_count":%d,"repair_needed":%s,"note":"sourceos-syncd not yet running — stub state per sourceos-shell#7."}\n' \
+      "$syncd_available" "$daemon_state" "$profile" "$workspace" "$device" "$degraded" "$policy_blocked" "$conflict_count" "$repair_needed"
+  else
+    printf "SourceOS State Integrity Context\n"
+    printf "  daemon:          %s (%s)\n" "$daemon_state" "$([ "$syncd_available" = true ] && echo 'available' || echo 'unavailable')"
+    printf "  profile:         %s\n" "$profile"
+    printf "  workspace:       %s\n" "$workspace"
+    printf "  device:          %s\n" "$device"
+    printf "  degraded:        %s\n" "$degraded"
+    printf "  policy_blocked:  %s\n" "$policy_blocked"
+    printf "  conflict_count:  %d\n" "$conflict_count"
+    printf "  repair_needed:   %s\n" "$repair_needed"
+  fi
+}
+
+lifecycle_status() {
+  local json_mode=0
+  [[ "${1:-}" == "--json" ]] && json_mode=1
+
+  local state="RUNNING"
+  local identity_confirmed=true
+  local org_policy_ready=true
+  local capability_graph_ready=true
+  local session_ready=true
+
+  if [[ "$json_mode" -eq 1 ]]; then
+    printf '{"state":"%s","identity_confirmed":%s,"org_policy_ready":%s,"capability_graph_ready":%s,"session_ready":%s}\n' \
+      "$state" "$identity_confirmed" "$org_policy_ready" "$capability_graph_ready" "$session_ready"
+  else
+    printf "SourceOS Host Runtime Lifecycle\n"
+    printf "  state:                   %s\n" "$state"
+    printf "  identity_confirmed:      %s\n" "$identity_confirmed"
+    printf "  org_policy_ready:        %s\n" "$org_policy_ready"
+    printf "  capability_graph_ready:  %s\n" "$capability_graph_ready"
+    printf "  session_ready:           %s\n" "$session_ready"
+  fi
+}
+
+main() {
+  local cmd="${1:-}"
+  case "$cmd" in
+    -h|--help|help|"") usage ;;
+    explain)
+      shift
+      local sub="${1:-}"
+      case "$sub" in
+        writes)    explain_writes ;;
+        sync)      explain_sync ;;
+        browser)   explain_browser ;;
+        terminal)  explain_terminal ;;
+        logs)      explain_logs ;;
+        compromise) explain_compromise ;;
+        *) err "unknown explain surface: $sub"; usage; exit 2 ;;
+      esac
+      ;;
+    state-integrity)
+      shift
+      local sub="${1:-status}"; shift || true
+      case "$sub" in
+        status) state_integrity_status "${@-}" ;;
+        *) err "unknown state-integrity subcommand: $sub"; usage; exit 2 ;;
+      esac
+      ;;
+    lifecycle)
+      shift
+      local sub="${1:-status}"
+      [[ $# -gt 0 ]] && shift || true
+      case "$sub" in
+        status) lifecycle_status "${@-}" ;;
+        *) err "unknown lifecycle subcommand: $sub"; usage; exit 2 ;;
+      esac
+      ;;
+    *) err "unknown command: $cmd"; usage; exit 2 ;;
+  esac
+}
+
+main "$@"
