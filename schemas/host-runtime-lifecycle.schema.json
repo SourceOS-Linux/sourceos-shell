@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.srcos.ai/v2/HostRuntimeLifecycleState.json",
+  "title": "HostRuntimeLifecycleState",
+  "description": "Describes the current lifecycle phase of the SourceOS host runtime, from sealed boot through a live user session.",
+  "type": "object",
+  "required": ["id", "specVersion", "state", "deviceRef", "observedAt"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "URN uniquely identifying this lifecycle state snapshot."
+    },
+    "specVersion": {
+      "type": "string",
+      "const": "0.1.0"
+    },
+    "state": {
+      "type": "string",
+      "description": "Current lifecycle phase of the host runtime.",
+      "enum": [
+        "BOOT",
+        "LOCAL_READY",
+        "IDENTITY_PENDING",
+        "IDENTITY_CONFIRMED",
+        "ORG_POLICY_LOADING",
+        "ORG_POLICY_READY",
+        "CAPABILITY_GRAPH_READY",
+        "SESSION_READY",
+        "RUNNING",
+        "DRAINING",
+        "CLEANUP_RUNNING",
+        "HALTED",
+        "RECOVERY"
+      ]
+    },
+    "previousState": {
+      "type": "string",
+      "description": "The state immediately preceding the current one.",
+      "enum": [
+        "BOOT",
+        "LOCAL_READY",
+        "IDENTITY_PENDING",
+        "IDENTITY_CONFIRMED",
+        "ORG_POLICY_LOADING",
+        "ORG_POLICY_READY",
+        "CAPABILITY_GRAPH_READY",
+        "SESSION_READY",
+        "RUNNING",
+        "DRAINING",
+        "CLEANUP_RUNNING",
+        "HALTED",
+        "RECOVERY"
+      ]
+    },
+    "deviceRef": {
+      "type": "string",
+      "description": "URN of the device this lifecycle record is scoped to."
+    },
+    "identityRef": {
+      "type": "string",
+      "description": "URN of the confirmed sovereign identity, populated from IDENTITY_CONFIRMED onward."
+    },
+    "orgPolicyRef": {
+      "type": "string",
+      "description": "URN of the loaded org policy manifest, populated from ORG_POLICY_READY onward."
+    },
+    "capabilityGraphRef": {
+      "type": "string",
+      "description": "URN of the capability graph snapshot, populated from CAPABILITY_GRAPH_READY onward."
+    },
+    "sessionRef": {
+      "type": "string",
+      "description": "URN of the active user session, populated from SESSION_READY onward."
+    },
+    "observedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when this state was observed."
+    },
+    "transitionedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when the transition into this state completed."
+    },
+    "faultRef": {
+      "type": "string",
+      "description": "URN of a FaultEnvelope record if the transition involved a fault or recovery."
+    },
+    "drainReason": {
+      "type": "string",
+      "description": "Human-readable reason for entering DRAINING (user logout, policy revocation, etc.). Required when state is DRAINING.",
+      "maxLength": 512
+    },
+    "recoveryContext": {
+      "type": "object",
+      "description": "Populated when state is RECOVERY.",
+      "additionalProperties": false,
+      "properties": {
+        "triggeredBy": {
+          "type": "string",
+          "enum": ["policy-revocation", "identity-loss", "capability-revocation", "hardware-fault", "manual-override"]
+        },
+        "lastSafeState": {
+          "type": "string"
+        },
+        "recoveryActionRef": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "if": {
+    "properties": { "state": { "const": "DRAINING" } },
+    "required": ["state"]
+  },
+  "then": {
+    "required": ["drainReason"]
+  }
+}
